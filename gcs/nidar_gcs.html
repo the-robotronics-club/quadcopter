@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIDAR // GROUND CONTROL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* warm charcoal / bone-grey field-instrument palette — still strictly black & grey */
+    --bg-0:#0a0908;
+    --bg-1:#121110;
+    --bg-2:#17160f;
+    --bg-3:#211f18;
+    --line-0:#28261e;
+    --line-1:#3a382c;
+    --grey-dim:#655f52;
+    --grey-mid:#928c7c;
+    --grey-hi:#cec8ba;
+    --white:#f3efe4;
+    --wall:#050403;
+    --wall-line:#4d493e;
+    --floor:#19170f;
+    --corridor:#211e15;
+    --room:#2b271b;
+    --unmapped:#0a0906;
+    --door:#2e2a1c;
+    --door-line:#f28c12;
+    --window:#1c2733;
+    --window-line:#5a7ea3;
+    --entry:#0dff33;
+    --exit:#ff3010;
+    --obj-crate:#8c592a;
+    --obj-rubble:#787a7d;
+    --obj-barrel:#cca31c;
+    --mono: 'IBM Plex Mono', ui-monospace, "SF Mono", Consolas, monospace;
+    --display: 'Big Shoulders Stencil', var(--mono);
+    --sans: var(--mono);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    background:var(--bg-0);
+    color:var(--grey-hi);
+    font-family:var(--sans);
+    height:100%;
+    overflow:hidden;
+  }
+  body{
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    height:100vh;
+    position:relative;
+  }
+  /* fine grain texture — the whole point is this shouldn't look printed from a template */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    pointer-events:none;
+    opacity:.05;
+    mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:9px 16px;
+    background:var(--bg-1);
+    border-bottom:1px solid var(--line-0);
+  }
+  .brand{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:23px;
+    letter-spacing:3px;
+    color:var(--white);
+    display:flex;
+    align-items:baseline;
+    gap:9px;
+    transform:rotate(-0.5deg);
+    white-space:nowrap;
+  }
+  .brand small{
+    font-family:var(--mono);
+    font-weight:500;
+    font-size:10px;
+    letter-spacing:1.5px;
+    color:var(--grey-dim);
+  }
+  .asset-tag{
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:1.5px;
+    color:var(--grey-dim);
+    border:1px dashed var(--line-1);
+    padding:3px 7px;
+    transform:rotate(-1deg);
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .conn-block{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-left:auto;
+    font-family:var(--mono);
+    font-size:11px;
+  }
+  .conn-block input{
+    background:var(--bg-2);
+    border:1px solid var(--line-1);
+    color:var(--grey-hi);
+    font-family:var(--mono);
+    font-size:11px;
+    padding:6px 8px;
+    width:220px;
+    outline:none;
+  }
+  .conn-block input:focus{border-color:var(--grey-mid);}
+  .btn{
+    background:var(--bg-2);
+    border:1px solid var(--line-1);
+    color:var(--grey-hi);
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:1px;
+    padding:6px 14px;
+    cursor:pointer;
+    text-transform:uppercase;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .btn:hover{background:var(--bg-3); border-color:var(--grey-dim);}
+  .btn:active{background:var(--line-0); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+  .btn.danger{border-color:var(--grey-mid); color:var(--white);}
+  .btn:disabled{
+    opacity:.35;
+    cursor:not-allowed;
+    pointer-events:none;
+  }
+  .status-dot{
+    width:9px; height:9px; border-radius:50%;
+    border:1px solid var(--grey-dim);
+    background:transparent;
+    flex-shrink:0;
+  }
+  .status-dot.live{
+    background:var(--white);
+    border-color:var(--white);
+    animation:pulse-dot 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse-dot{
+    0%,100%{opacity:1;}
+    50%{opacity:.35;}
+  }
+  .status-label{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:1px;
+    color:var(--grey-mid);
+    min-width:66px;
+  }
+  .status-label.live{color:var(--white);}
+
+  /* ---------- MAIN GRID ---------- */
+  main{
+    display:grid;
+    grid-template-columns:1fr 1fr 340px;
+    grid-template-rows:1fr;
+    min-height:0;
+    min-width:0;
+  }
+
+  .map-panel, .camera-panel{
+    position:relative;
+    background:var(--bg-0);
+    border-right:1px solid var(--line-0);
+    overflow:hidden;
+    min-width:0;
+    min-height:0;
+  }
+  #mapCanvas{
+    display:block;
+    width:100%;
+    height:100%;
+    cursor:grab;
+  }
+  #mapCanvas:active{cursor:grabbing;}
+
+  /* viewfinder-style corner brackets — the map is something the drone is "looking at" */
+  .corner{
+    position:absolute;
+    width:16px; height:16px;
+    pointer-events:none;
+    z-index:5;
+  }
+  .corner-tl{top:8px; left:8px; border-top:1.5px solid var(--grey-mid); border-left:1.5px solid var(--grey-mid);}
+  .corner-tr{top:8px; right:8px; border-top:1.5px solid var(--grey-mid); border-right:1.5px solid var(--grey-mid);}
+  .corner-bl{bottom:8px; left:8px; border-bottom:1.5px solid var(--grey-mid); border-left:1.5px solid var(--grey-mid);}
+  .corner-br{bottom:8px; right:8px; border-bottom:1.5px solid var(--grey-mid); border-right:1.5px solid var(--grey-mid);}
+
+  .map-overlay-top{
+    position:absolute;
+    top:10px; left:10px;
+    display:flex;
+    gap:10px;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:1px;
+    color:var(--grey-mid);
+    pointer-events:none;
+  }
+  .map-overlay-top span{
+    background:rgba(15,16,17,0.75);
+    border:1px dashed var(--line-1);
+    padding:4px 8px;
+  }
+  .map-controls{
+    position:absolute;
+    bottom:10px; left:10px;
+    display:flex;
+    gap:6px;
+  }
+  .map-controls button{
+    width:26px; height:26px;
+    background:rgba(22,23,24,0.85);
+    border:1px solid var(--line-1);
+    color:var(--grey-hi);
+    font-family:var(--mono);
+    font-size:13px;
+    cursor:pointer;
+  }
+  .map-controls button:hover{background:var(--bg-3);}
+
+  .camera-panel .map-overlay-top{
+    z-index:6;
+  }
+
+  .legend{
+    position:absolute;
+    bottom:10px; right:10px;
+    background:rgba(15,16,17,0.85);
+    border:1px solid var(--line-0);
+    padding:8px 10px;
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:.5px;
+    color:var(--grey-mid);
+    display:grid;
+    gap:4px;
+    pointer-events:none;
+  }
+  .legend .row{display:flex; align-items:center; gap:6px;}
+  .legend .swatch{width:10px; height:10px; flex-shrink:0; border:1px solid var(--line-1);}
+
+  /* ---------- SIDEBAR ---------- */
+  .sidebar{
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    overflow-y:auto;
+    background:var(--bg-1);
+  }
+  .panel{
+    border-bottom:1px solid var(--line-0);
+    padding:12px 14px;
+    flex-shrink:0;
+  }
+  .panel-title{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:2px;
+    color:var(--grey-dim);
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .panel-title::before{content:"// "; color:var(--line-1);}
+
+  /* camera */
+  .camera-panel .cam-wrap{
+    position:relative;
+    width:100%;
+    height:100%;
+    background:var(--bg-0);
+    overflow:hidden;
+  }
+  .cam-wrap img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:grayscale(1) contrast(1.05) sepia(.12);
+  }
+  .cam-noise{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:6px;
+    font-family:var(--mono); font-size:10px; letter-spacing:2px;
+    color:var(--grey-dim);
+  }
+  .cam-noise::after{content:"+"; font-size:15px; color:var(--line-1);}
+  .cam-tag{
+    position:absolute; left:0; right:0; bottom:0;
+    font-family:var(--mono); font-size:9px; letter-spacing:1.5px;
+    color:var(--grey-hi);
+    background:linear-gradient(to top, rgba(0,0,0,.8), rgba(0,0,0,0));
+    padding:16px 8px 6px;
+  }
+
+  /* mission status */
+  .stat-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px 12px;
+    font-family:var(--mono);
+  }
+  .stat{
+    display:flex; flex-direction:column; gap:2px;
+  }
+  .stat .k{font-size:9px; letter-spacing:1px; color:var(--grey-dim);}
+  .stat .v{font-size:15px; color:var(--white);}
+  .stat .v.small{font-size:12px;}
+
+  .progress-outer{
+    margin-top:10px;
+    height:6px;
+    background:var(--bg-0);
+    border:1px solid var(--line-0);
+    overflow:hidden;
+  }
+  .progress-inner{
+    height:100%;
+    width:0%;
+    background:var(--grey-hi);
+    transition:width .4s ease;
+  }
+  .progress-label{
+    display:flex; justify-content:space-between;
+    font-family:var(--mono); font-size:9px; color:var(--grey-dim);
+    margin-top:4px;
+  }
+
+  /* survivor list */
+  .survivor-panel{
+    flex:1 1 0;
+    min-height:220px;
+    display:flex;
+    flex-direction:column;
+    padding-bottom:10px;
+  }
+  .survivor-panel .panel-title{
+    font-size:12px;
+    letter-spacing:2.5px;
+    color:var(--grey-hi);
+    margin-bottom:10px;
+  }
+  .survivor-panel .panel-title #survivorCount{
+    font-size:12px;
+    font-weight:700;
+    color:var(--white) !important;
+  }
+  .survivor-panel .panel-title #survivorCount.complete{
+    color:var(--white) !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .survivor-list{
+    overflow-y:auto;
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .survivor-item{
+    border:1px solid var(--line-1);
+    border-left:3px solid var(--grey-hi);
+    background:var(--bg-2);
+    padding:10px 12px;
+    font-family:var(--mono);
+  }
+  .survivor-item .row1{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:13px; color:var(--white); letter-spacing:.5px; font-weight:700;
+  }
+  .survivor-item .row2{
+    display:flex; justify-content:space-between;
+    font-size:10.5px; color:var(--grey-mid); margin-top:5px;
+  }
+  .conf-bar{
+    height:4px; background:var(--bg-0); margin-top:8px; border:1px solid var(--line-0);
+  }
+  .conf-bar-inner{height:100%; background:var(--grey-hi);}
+  .empty-note{
+    font-family:var(--mono); font-size:10px; color:var(--grey-dim);
+    padding:10px 0; text-align:center;
+  }
+
+  /* ---------- LOG FOOTER ---------- */
+  footer{
+    background:var(--bg-1);
+    border-top:1px solid var(--line-0);
+    height:120px;
+    display:flex;
+    flex-direction:column;
+  }
+  .log-title{
+    font-family:var(--mono); font-size:10px; letter-spacing:2px;
+    color:var(--grey-dim); padding:6px 14px; text-transform:uppercase;
+    border-bottom:1px solid var(--line-0);
+  }
+  .log-title::before{content:"// "; color:var(--line-1);}
+  .log-body{
+    flex:1;
+    overflow-y:auto;
+    padding:6px 14px;
+    font-family:var(--mono);
+    font-size:10.5px;
+    line-height:1.5;
+  }
+  .log-line{color:var(--grey-mid); white-space:pre-wrap;}
+  .log-line .ts{color:var(--grey-dim); margin-right:8px;}
+  .log-line.warn{color:var(--white);}
+
+  ::-webkit-scrollbar{width:7px; height:7px;}
+  ::-webkit-scrollbar-track{background:var(--bg-1);}
+  ::-webkit-scrollbar-thumb{background:var(--line-1);}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1100px){
+    main{
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:1fr auto;
+    }
+    .map-panel{ grid-column:1; grid-row:1; }
+    .camera-panel{ grid-column:2; grid-row:1; border-right:1px solid var(--line-0); }
+    .sidebar{ grid-column:1 / span 2; grid-row:2; flex-direction:row; flex-wrap:wrap; max-height:38vh; }
+    .sidebar .panel{ flex:1 1 260px; }
+    .survivor-panel{ min-height:160px; }
+  }
+  @media (max-width: 760px){
+    body{ overflow-y:auto; height:auto; min-height:100vh; }
+    header{ flex-wrap:wrap; row-gap:8px; height:auto; }
+    .conn-block{ flex-wrap:wrap; width:100%; margin-left:0; }
+    .conn-block input{ width:100%; flex:1 1 160px; }
+    main{
+      grid-template-columns:1fr;
+      grid-template-rows:auto;
+      height:auto;
+    }
+    .map-panel{ grid-column:1; grid-row:1; height:52vh; border-right:none; border-bottom:1px solid var(--line-0); }
+    .camera-panel{ grid-column:1; grid-row:2; height:38vh; border-right:none; border-bottom:1px solid var(--line-0); }
+    .sidebar{ grid-column:1; grid-row:3; flex-direction:column; max-height:none; }
+    .sidebar .panel{ flex:1 1 auto; }
+    footer{ height:auto; max-height:160px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">GCS <small>NIDAR · AIRMOUSE · GROUND CONTROL STATION</small></div>
+
+  <div class="conn-block">
+    <span class="status-dot" id="statusDot"></span>
+    <span class="status-label" id="statusLabel">OFFLINE</span>
+    <input id="wsUrl" type="text" value="ws://192.168.4.1:8765" spellcheck="false">
+    <button class="btn" id="connectBtn">Connect</button>
+    <button class="btn danger" id="simBtn" title="Feed simulated data for bench testing without a drone link">Simulate</button>
+    <button class="btn" id="clearBtn" title="Wipe the map/trail/detections and re-arm for a fresh local coordinate frame">New Mission</button>
+  </div>
+</header>
+
+<main>
+  <section class="map-panel">
+    <canvas id="mapCanvas"></canvas>
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+    <div class="map-overlay-top">
+      <span id="coverageTag">MAPPED CELLS: 0</span>
+      <span id="cellSizeTag">GRID: 1.0 m/box</span>
+      <span id="fixTag">NO FIX</span>
+      <span title="No arena blueprint is preloaded — every coordinate below is relative to wherever the drone was powered on, not a known building layout">LOCAL FRAME · ORIGIN = TAKEOFF</span>
+    </div>
+    <div class="map-controls">
+      <button id="zoomIn">+</button>
+      <button id="zoomOut">−</button>
+      <button id="recenter">⊙</button>
+    </div>
+    <div class="legend">
+      <div class="row"><span class="swatch" style="background:var(--wall); border-color:var(--wall-line);"></span> WALL</div>
+      <div class="row"><span class="swatch" style="background:var(--door); border-color:var(--door-line);"></span> DOOR</div>
+      <div class="row"><span class="swatch" style="background:var(--window); border-color:var(--window-line);"></span> WINDOW</div>
+      <div class="row"><span class="swatch" style="background:var(--corridor);"></span> CORRIDOR</div>
+      <div class="row"><span class="swatch" style="background:var(--room);"></span> ROOM</div>
+      <div class="row"><span class="swatch" style="background:var(--floor);"></span> OPEN / FLOOR</div>
+      <div class="row"><span class="swatch" style="background:var(--unmapped); border-color:var(--line-0);"></span> UNMAPPED</div>
+      <div class="row"><span class="swatch" style="background:var(--entry); border-color:var(--entry);"></span> ENTRY POINT</div>
+      <div class="row"><span class="swatch" style="background:var(--exit); border-color:var(--exit);"></span> EXIT POINT</div>
+      <div class="row"><span class="swatch" style="background:var(--obj-crate); border-color:var(--obj-crate);"></span> OBSTACLE</div>
+    </div>
+  </section>
+
+  <section class="camera-panel">
+    <div class="cam-wrap" id="camWrap">
+      <div class="cam-noise" id="camNoise">NO SIGNAL</div>
+      <img id="camImg" style="display:none;">
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+      <div class="map-overlay-top"><span>LIVE CAMERA FEED</span></div>
+      <div class="cam-tag" id="camTag">CAM · —</div>
+    </div>
+  </section>
+
+  <aside class="sidebar">
+    <div class="panel">
+      <div class="panel-title">Mission Status</div>
+      <div class="stat-grid">
+        <div class="stat"><span class="k">PHASE</span><span class="v small" id="statPhase">STANDBY</span></div>
+        <div class="stat"><span class="k">ELAPSED</span><span class="v" id="statElapsed">00:00</span></div>
+        <div class="stat"><span class="k">DRONE POS (LOCAL X,Y m)</span><span class="v small" id="statPos">NO FIX</span></div>
+        <div class="stat"><span class="k">HEADING</span><span class="v small" id="statHeading">—°</span></div>
+        <div class="stat"><span class="k">BATTERY</span><span class="v small" id="statBattery">—%</span></div>
+        <div class="stat"><span class="k">LINK</span><span class="v small" id="statLink">—</span></div>
+      </div>
+      <div class="progress-outer"><div class="progress-inner" id="progressBar"></div></div>
+      <div class="progress-label"><span>SEARCH COVERAGE</span><span id="progressPct">0%</span></div>
+    </div>
+
+    <div class="panel survivor-panel">
+      <div class="panel-title">Detected Survivors <span id="survivorCount" style="color:var(--grey-mid);">(0/6)</span></div>
+      <div class="survivor-list" id="survivorList">
+        <div class="empty-note">NO SURVIVORS TAGGED</div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <div class="log-title">Telemetry Log</div>
+  <div class="log-body" id="logBody"></div>
+</footer>
+
+<script>
+/* =========================================================================
+   NIDAR GCS — first draft
+   Expects a WebSocket JSON stream from the drone / companion computer over
+   the closed local Wi-Fi / ad-hoc link. No internet dependency for logic —
+   only the two Google Fonts calls need a network the first time this loads.
+
+   IMPORTANT — there is NO preloaded blueprint and NO known starting
+   coordinate. The arena (walls/rooms/doors/windows/entry/exit/clutter —
+   see floorplan_generator.py for the kind of layout this will look like)
+   is generated per-run and the drone has no GPS (the arena is a fully
+   enclosed, GPS-denied space). The drone's onboard estimator (VIO/SLAM)
+   invents its own local (x,y) frame anchored wherever it happened to be
+   powered on, and every coordinate it ever reports is relative to THAT
+   origin — never to the building's real footprint. So the GCS must not
+   assume (0,0) is a real, confirmed position: nothing is drawn/considered
+   "fixed" until the first telemetry message actually arrives (see
+   state.drone.hasFix below), and the whole map is built up live, purely
+   from what the drone has personally flown through and reported.
+
+   ---- Assumed message schema (adjust to match the real drone-side format
+        once it's finalized — this is a placeholder contract) ----
+
+   { "type": "telemetry", "data": {
+       "x": 3.4, "y": 1.2, "heading_deg": 87, "estimated": false,
+       "battery_pct": 76, "rssi_pct": 88, "phase": "SEARCHING" } }
+
+   { "type": "map_update", "data": {
+       "cells": [ {"x":3,"y":1,"kind":"corridor"}, {"x":4,"y":1,"kind":"wall"},
+                  {"x":5,"y":1,"kind":"door"}, {"x":6,"y":1,"kind":"window"} ],
+       "cell_size_m": 1.0,
+       "rooms": [ {"id":"R1","x":6,"y":2,"label":"ROOM 1"} ] } }
+
+   // Alternative to map_update — send this instead if your mapping
+   // stack is Nav2 / slam_toolbox and you'd rather forward its
+   // nav_msgs/OccupancyGrid output near-verbatim through a thin ROS2
+   // bridge, instead of writing a wall/door/window/room classifier.
+   // Only occupied vs. free vs. unknown is required by the mission
+   // brief — cells become 'wall' (>=65) or 'floor' (<65); -1 (unknown)
+   // is skipped and left unmapped, same as anything never reported.
+   { "type": "occupancy_grid", "data": {
+       "width": 40, "height": 40, "resolution": 0.2,
+       "origin": {"x": -4.0, "y": -4.0},
+       "data": [ -1, -1, 0, 0, 100, 0, "... width*height values ..." ] } }
+
+   { "type": "survivor", "data": {
+       "id": 1, "grid_box": "C4", "x": 6.2, "y": 3.1,
+       "confidence": 0.91, "t": 142 } }
+
+   // The mission's single designated entry point and single designated
+   // exit point are only known once the drone has actually SEEN the
+   // colour-coded marker itself (see MAT_ENTRY/MAT_EXIT in
+   // floorplan_generator.py) -- reported as a waypoint, in the drone's
+   // own local frame, exactly like a survivor detection.
+   { "type": "waypoint", "data": {
+       "role": "entry" | "exit", "x": 1.0, "y": 0.4, "t": 30 } }
+
+   // Obstacle/furniture clutter the drone has flown past and logged.
+   { "type": "object", "data": {
+       "id": 1, "kind": "obj_crate" | "obj_rubble" | "obj_barrel",
+       "x": 4.1, "y": 2.6, "t": 44 } }
+
+   // "data" can be a bare base64 jpeg string for backward compatibility,
+   // or an object carrying the grid box / room the frame was captured in
+   // so the footage panel can be tagged with the part of the map it
+   // belongs to.
+   { "type": "camera_frame", "data": {
+       "jpeg": "<base64 jpeg>", "grid_box": "C4", "room": "ROOM 2" } }
+   ========================================================================= */
+
+const state = {
+  ws: null,
+  connected: false,
+  cells: new Map(),       // "x,y" -> kind
+  rooms: new Map(),       // id -> {x,y,label}
+  survivors: new Map(),   // id -> survivor obj
+  waypoints: new Map(),   // role ("entry"/"exit") -> {x,y,t}
+  objects: new Map(),     // id -> {kind,x,y,t}
+  // hasFix stays false until the very first telemetry message arrives --
+  // there is no known starting position, so nothing is drawn at a fake
+  // (0,0) before the drone has actually reported where it is.
+  drone: { x:0, y:0, heading:0, estimated:false, hasFix:false, trail:[] },
+  cellSizeM: 1.0,
+  startTime: null,
+  serverElapsed: null,
+  serverElapsedAt: null,
+  view: { scale: 28, offsetX: 0, offsetY: 0, dragging:false, lastX:0, lastY:0, autoFit:true },
+  simTimer: null,
+  sim: null,  // { t, x, y, heading, seeded, objId } while the bench-test simulator is running
+};
+
+const el = id => document.getElementById(id);
+const canvas = el('mapCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas(){
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * devicePixelRatio;
+  canvas.height = rect.height * devicePixelRatio;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  drawMap();
+}
+window.addEventListener('resize', resizeCanvas);
+
+/* ---------------- logging ---------------- */
+function log(msg, warn=false){
+  const t = new Date().toLocaleTimeString('en-GB', {hour12:false});
+  const line = document.createElement('div');
+  line.className = 'log-line' + (warn ? ' warn' : '');
+  line.innerHTML = `<span class="ts">${t}</span>${msg}`;
+  el('logBody').appendChild(line);
+  el('logBody').scrollTop = el('logBody').scrollHeight;
+  while (el('logBody').children.length > 300) el('logBody').removeChild(el('logBody').firstChild);
+}
+
+/* ---------------- mission reset ----------------
+   A fresh connection means a fresh drone boot means a fresh, unrelated
+   local coordinate origin -- so anything drawn from a previous session
+   has to be cleared out rather than silently blended with the new one. */
+function resetMission(){
+  state.cells.clear();
+  state.rooms.clear();
+  state.survivors.clear();
+  state.waypoints.clear();
+  state.objects.clear();
+  state.drone.x = 0; state.drone.y = 0; state.drone.heading = 0;
+  state.drone.estimated = false; state.drone.hasFix = false;
+  state.drone.trail = [];
+  state.view.offsetX = 0; state.view.offsetY = 0; state.view.autoFit = true;
+  state.startTime = null; state.serverElapsed = null; state.serverElapsedAt = null;
+  if (state.sim){
+    state.sim = { t:0, x:0, y:0, heading:0, seeded:new Set(), objId:0 };
+  }
+  el('fixTag').textContent = 'NO FIX';
+  el('statPos').textContent = 'NO FIX';
+  el('statHeading').textContent = '—°';
+  el('statBattery').textContent = '—%';
+  el('statLink').textContent = '—';
+  el('statPhase').textContent = 'STANDBY';
+  el('statElapsed').textContent = '00:00';
+  el('progressBar').style.width = '0%';
+  el('progressPct').textContent = '0%';
+  el('coverageTag').textContent = 'MAPPED CELLS: 0';
+  el('camImg').style.display = 'none';
+  el('camNoise').style.display = 'flex';
+  el('camTag').textContent = 'CAM · —';
+  renderSurvivorList();
+  drawMap();
+}
+
+el('clearBtn').addEventListener('click', () => {
+  resetMission();
+  log('Map cleared — armed for a new local coordinate frame.', true);
+});
+
+/* ---------------- connection ---------------- */
+function setConnected(isLive){
+  state.connected = isLive;
+  el('statusDot').classList.toggle('live', isLive);
+  el('statusLabel').classList.toggle('live', isLive);
+  el('statusLabel').textContent = isLive ? 'LIVE' : 'OFFLINE';
+  el('connectBtn').textContent = isLive ? 'Disconnect' : 'Connect';
+  el('statLink').textContent = isLive ? 'CONNECTED' : '—';
+  if (!isLive){
+    el('camImg').style.display = 'none';
+    el('camNoise').style.display = 'flex';
+  }
+}
+
+/* Simulate must never run alongside a live drone link — once connected,
+   every marker on the map has to come from real telemetry only. Lock the
+   Simulate button out entirely (rather than silently switching away from
+   a live connection) whenever state.ws is an open/opening socket. */
+function updateSimLock(){
+  const btn = el('simBtn');
+  const locked = !!state.ws;
+  btn.disabled = locked;
+  btn.title = locked
+    ? 'Disabled while connected to a live drone link — simulated data is never mixed with real telemetry'
+    : 'Feed simulated data for bench testing without a drone link';
+}
+
+el('connectBtn').addEventListener('click', () => {
+  if (state.ws){
+    state.ws.close();
+    state.ws = null;
+    setConnected(false);
+    updateSimLock();
+    log('Manually disconnected.', true);
+    return;
+  }
+  if (state.simTimer){
+    stopSim();
+    el('simBtn').textContent = 'Simulate';
+    log('Simulation stopped — connecting to live link instead.', true);
+  }
+  const url = el('wsUrl').value.trim();
+  if (!url) return;
+  try{
+    state.ws = new WebSocket(url);
+  }catch(e){
+    log('Invalid WS URL: ' + e.message, true);
+    return;
+  }
+  updateSimLock();
+  log('Connecting to ' + url + ' …');
+  state.ws.onopen = () => {
+    resetMission();
+    setConnected(true);
+    state.startTime = Date.now();
+    log('WebSocket link established — awaiting first telemetry fix.');
+  };
+  state.ws.onclose = () => {
+    state.ws = null;
+    setConnected(false);
+    updateSimLock();
+    log('WebSocket link closed.', true);
+  };
+  state.ws.onerror = () => {
+    log('WebSocket error — check IP/port and that GCS is on the same local network.', true);
+  };
+  state.ws.onmessage = (ev) => {
+    try{
+      const msg = JSON.parse(ev.data);
+      handleMessage(msg);
+    }catch(e){
+      log('Malformed message dropped: ' + e.message, true);
+    }
+  };
+});
+
+/* ---------------- message handling ---------------- */
+function handleMessage(msg){
+  switch(msg.type){
+    case 'telemetry': onTelemetry(msg.data); break;
+    case 'map_update': onMapUpdate(msg.data); break;
+    case 'occupancy_grid': onOccupancyGrid(msg.data); break;
+    case 'survivor': onSurvivor(msg.data); break;
+    case 'waypoint': onWaypoint(msg.data); break;
+    case 'object': onObject(msg.data); break;
+    case 'mission_status': onMissionStatus(msg.data); break;
+    case 'camera_frame': onCameraFrame(msg.data); break;
+    default: log('Unknown message type: ' + msg.type, true);
+  }
+}
+
+function onTelemetry(d){
+  const firstFix = !state.drone.hasFix;
+  state.drone.x = d.x; state.drone.y = d.y;
+  state.drone.heading = d.heading_deg || 0;
+  state.drone.estimated = !!d.estimated;
+  state.drone.hasFix = true;
+  state.drone.trail.push({x:d.x, y:d.y});
+  if (state.drone.trail.length > 400) state.drone.trail.shift();
+
+  if (state.view.autoFit){
+    state.view.offsetX = d.x;
+    state.view.offsetY = d.y;
+  }
+
+  if (firstFix){
+    el('fixTag').textContent = 'FIX ACQUIRED';
+    log(`Local position estimator initialized — origin set at drone takeoff pose (${d.x.toFixed(1)}, ${d.y.toFixed(1)} in its own frame).`);
+  }
+  el('statPos').textContent = `${d.x.toFixed(1)}, ${d.y.toFixed(1)}`;
+  el('statHeading').textContent = Math.round(d.heading_deg || 0) + '°';
+  if (d.battery_pct != null) el('statBattery').textContent = Math.round(d.battery_pct) + '%';
+  if (d.rssi_pct != null) el('statLink').textContent = Math.round(d.rssi_pct) + '% RSSI';
+  if (d.phase) el('statPhase').textContent = d.phase;
+  drawMap();
+}
+
+function onMapUpdate(d){
+  if (d.cell_size_m){
+    state.cellSizeM = d.cell_size_m;
+    el('cellSizeTag').textContent = `GRID: ${d.cell_size_m.toFixed(1)} m/box`;
+  }
+  (d.cells || []).forEach(c => state.cells.set(c.x + ',' + c.y, c.kind));
+  (d.rooms || []).forEach(r => state.rooms.set(r.id, r));
+  el('coverageTag').textContent = `MAPPED CELLS: ${state.cells.size}`;
+  drawMap();
+}
+
+/* Accepts a payload shaped like a standard ROS nav_msgs/OccupancyGrid —
+   width, height, resolution (m/cell), origin (world x/y of grid cell
+   0,0 in the drone's local frame), and a row-major data[] array where
+   each value is -1 (unknown), or 0-100 (probability the cell is
+   occupied). This lets a thin ROS2 bridge forward Nav2/slam_toolbox's
+   /map topic almost as-is — no wall/door/window/room classification
+   needed, since the mission only requires an explored/unexplored 2D
+   map with survivor markers on it, not semantic room labeling. */
+function onOccupancyGrid(d){
+  if (!d || !d.data || !d.width || !d.height) return;
+  const res = d.resolution || state.cellSizeM || 1.0;
+  if (d.resolution){
+    state.cellSizeM = res;
+    el('cellSizeTag').textContent = `GRID: ${res.toFixed(2)} m/box`;
+  }
+  const originX = (d.origin && d.origin.x) || 0;
+  const originY = (d.origin && d.origin.y) || 0;
+  const OCCUPIED_THRESHOLD = 65; // matches typical Nav2/slam_toolbox occupied threshold
+
+  let changed = 0;
+  for (let row = 0; row < d.height; row++){
+    for (let col = 0; col < d.width; col++){
+      const v = d.data[row * d.width + col];
+      if (v == null || v < 0) continue; // -1 = unknown — leave unmapped, don't draw anything
+      const cx = Math.round(originX / res) + col;
+      const cy = Math.round(originY / res) + row;
+      const kind = v >= OCCUPIED_THRESHOLD ? 'wall' : 'floor';
+      state.cells.set(cx + ',' + cy, kind);
+      changed++;
+    }
+  }
+  if (changed) el('coverageTag').textContent = `MAPPED CELLS: ${state.cells.size}`;
+  drawMap();
+}
+
+function onSurvivor(d){
+  const isNew = !state.survivors.has(d.id);
+  state.survivors.set(d.id, d);
+  renderSurvivorList();
+  drawMap();
+  if (isNew) log(`Survivor #${d.id} tagged — grid box ${d.grid_box} (confidence ${(d.confidence*100).toFixed(0)}%)`);
+}
+
+function onWaypoint(d){
+  if (!d || !d.role) return;
+  const isNew = !state.waypoints.has(d.role);
+  state.waypoints.set(d.role, d);
+  drawMap();
+  if (isNew) log(`${d.role.toUpperCase()} point sighted at local (${(d.x||0).toFixed(1)}, ${(d.y||0).toFixed(1)}).`);
+}
+
+function onObject(d){
+  if (!d || d.id == null) return;
+  const isNew = !state.objects.has(d.id);
+  state.objects.set(d.id, d);
+  drawMap();
+  if (isNew) log(`Obstacle logged — ${(d.kind||'object').replace('obj_','')} at local (${(d.x||0).toFixed(1)}, ${(d.y||0).toFixed(1)}).`);
+}
+
+function onMissionStatus(d){
+  if (d.phase) el('statPhase').textContent = d.phase;
+  if (d.coverage_pct != null){
+    const pct = Math.max(0, Math.min(100, d.coverage_pct));
+    el('progressBar').style.width = pct + '%';
+    el('progressPct').textContent = Math.round(pct) + '%';
+  }
+  if (d.elapsed_s != null){
+    state.serverElapsed = d.elapsed_s;
+    state.serverElapsedAt = Date.now();
+    el('statElapsed').textContent = fmtTime(d.elapsed_s);
+  }
+}
+
+function onCameraFrame(payload){
+  const isObj = payload && typeof payload === 'object';
+  const b64 = isObj ? payload.jpeg : payload;
+  if (!b64) return;
+  el('camNoise').style.display = 'none';
+  const img = el('camImg');
+  img.style.display = 'block';
+  img.src = 'data:image/jpeg;base64,' + b64;
+
+  const ts = new Date().toLocaleTimeString('en-GB', {hour12:false});
+  const where = isObj ? [payload.grid_box, payload.room].filter(Boolean).join(' · ') : '';
+  el('camTag').textContent = where ? `CAM · ${where} · ${ts}` : `CAM · ${ts}`;
+}
+
+function fmtTime(s){
+  const m = Math.floor(s/60).toString().padStart(2,'0');
+  const sec = Math.floor(s%60).toString().padStart(2,'0');
+  return `${m}:${sec}`;
+}
+
+/* live elapsed clock — extrapolates from the last server-reported value so it
+   keeps ticking between mission_status messages instead of freezing, and
+   falls back to local wall-clock time if the server never sends elapsed_s */
+setInterval(() => {
+  if (!state.connected) return;
+  if (state.serverElapsed != null){
+    const s = state.serverElapsed + (Date.now() - state.serverElapsedAt) / 1000;
+    el('statElapsed').textContent = fmtTime(s);
+  } else if (state.startTime){
+    const s = (Date.now() - state.startTime) / 1000;
+    el('statElapsed').textContent = fmtTime(s);
+  }
+}, 1000);
+
+/* ---------------- survivor list render ---------------- */
+const MISSION_SURVIVOR_CAP = 6; // per mission brief: "locate up to 6 survivors"
+function renderSurvivorList(){
+  const wrap = el('survivorList');
+  const countEl = el('survivorCount');
+  countEl.textContent = `(${state.survivors.size}/${MISSION_SURVIVOR_CAP})`;
+  countEl.classList.toggle('complete', state.survivors.size >= MISSION_SURVIVOR_CAP);
+  if (state.survivors.size === 0){
+    wrap.innerHTML = '<div class="empty-note">NO SURVIVORS TAGGED</div>';
+    return;
+  }
+  const items = [...state.survivors.values()].sort((a,b) => (a.t||0) - (b.t||0));
+  wrap.innerHTML = '';
+  items.forEach(s => {
+    const conf = Math.round((s.confidence||0) * 100);
+    const div = document.createElement('div');
+    div.className = 'survivor-item';
+    div.innerHTML = `
+      <div class="row1"><span>SURVIVOR #${s.id}</span><span>${s.grid_box || '—'}</span></div>
+      <div class="row2"><span>x:${(s.x||0).toFixed(1)} y:${(s.y||0).toFixed(1)}</span><span>${conf}% conf</span></div>
+      <div class="conf-bar"><div class="conf-bar-inner" style="width:${conf}%;"></div></div>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+/* ---------------- map rendering ---------------- */
+function worldToScreen(x, y){
+  const s = state.view.scale;
+  return {
+    sx: canvas.width/2 + (x - state.view.offsetX) * s,
+    sy: canvas.height/2 + (y - state.view.offsetY) * s
+  };
+}
+
+function drawMap(){
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-0');
+  ctx.fillRect(0,0,w,h);
+
+  const s = state.view.scale;
+  const kindColor = {
+    wall: cssv('--wall'),
+    door: cssv('--door'),
+    window: cssv('--window'),
+    corridor: cssv('--corridor'),
+    room: cssv('--room'),
+    floor: cssv('--floor'),
+    free: cssv('--floor'),
+  };
+  const kindLine = {
+    wall: cssv('--wall-line'),
+    door: cssv('--door-line'),
+    window: cssv('--window-line'),
+  };
+
+  // cells
+  state.cells.forEach((kind, key) => {
+    const [cx, cy] = key.split(',').map(Number);
+    const p = worldToScreen(cx, cy);
+    ctx.fillStyle = kindColor[kind] || cssv('--unmapped');
+    ctx.fillRect(p.sx, p.sy, s, s);
+    ctx.strokeStyle = kindLine[kind] || cssv('--line-0');
+    ctx.lineWidth = (kind === 'door' || kind === 'window') ? 1.5 : 1;
+    ctx.strokeRect(p.sx+0.5, p.sy+0.5, s-1, s-1);
+  });
+
+  // room labels
+  state.rooms.forEach(r => {
+    const p = worldToScreen(r.x, r.y);
+    ctx.fillStyle = cssv('--grey-mid');
+    ctx.font = `${Math.max(9, s*0.28)}px 'IBM Plex Mono', ui-monospace, monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText(r.label || r.id, p.sx + s/2, p.sy + s/2);
+  });
+
+  // grid coordinate labels (every cell, small letter-number tag) — only if zoomed in enough
+  if (s > 22){
+    state.cells.forEach((kind, key) => {
+      const [cx, cy] = key.split(',').map(Number);
+      const p = worldToScreen(cx, cy);
+      ctx.fillStyle = 'rgba(150,144,124,0.35)';
+      ctx.font = `${Math.max(7, s*0.16)}px 'IBM Plex Mono', ui-monospace, monospace`;
+      ctx.textAlign = 'left';
+      ctx.fillText(gridLabel(cx,cy), p.sx + 3, p.sy + 10);
+    });
+  }
+
+  // drone trail (breadcrumb) — nothing to show until the drone has a fix
+  if (state.drone.hasFix && state.drone.trail.length > 1){
+    ctx.beginPath();
+    state.drone.trail.forEach((pt, i) => {
+      const p = worldToScreen(pt.x, pt.y);
+      const sx = p.sx + s/2, sy = p.sy + s/2;
+      if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+    });
+    ctx.strokeStyle = 'rgba(206,200,186,0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  // logged obstacles/clutter (crates, rubble, barrels)
+  const objColor = {obj_crate: cssv('--obj-crate'), obj_rubble: cssv('--obj-rubble'), obj_barrel: cssv('--obj-barrel')};
+  state.objects.forEach(o => {
+    const p = worldToScreen(o.x, o.y);
+    const cx = p.sx + s/2, cy = p.sy + s/2;
+    const r = s*0.18;
+    ctx.fillStyle = objColor[o.kind] || cssv('--grey-dim');
+    ctx.fillRect(cx-r, cy-r, r*2, r*2);
+    ctx.strokeStyle = cssv('--bg-0');
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx-r, cy-r, r*2, r*2);
+  });
+
+  // entry / exit waypoints — only known once the drone has actually seen
+  // the physical marker, so these simply won't be on the map until then
+  state.waypoints.forEach(wp => {
+    const p = worldToScreen(wp.x, wp.y);
+    const cx = p.sx + s/2, cy = p.sy + s/2;
+    const r = Math.max(7, s*0.3);
+    const color = wp.role === 'entry' ? cssv('--entry') : cssv('--exit');
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(Math.PI/4);
+    ctx.fillStyle = color;
+    ctx.fillRect(-r/2, -r/2, r, r);
+    ctx.restore();
+    ctx.fillStyle = cssv('--grey-hi');
+    ctx.font = `700 ${Math.max(9, s*0.22)}px 'IBM Plex Mono', ui-monospace, monospace`;
+    ctx.textAlign = 'left';
+    ctx.fillText(wp.role.toUpperCase(), cx + s*0.4, cy + s*0.35);
+  });
+
+  // survivors
+  const now = performance.now();
+  state.survivors.forEach(sv => {
+    const p = worldToScreen(sv.x, sv.y);
+    const cx = p.sx + s/2, cy = p.sy + s/2;
+    const pulse = (Math.sin(now/450) + 1) / 2; // 0..1
+    // pulsing ring
+    ctx.beginPath();
+    ctx.arc(cx, cy, s*0.35 + pulse*6, 0, Math.PI*2);
+    ctx.strokeStyle = `rgba(243,239,228,${0.5 - pulse*0.35})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // core marker
+    ctx.beginPath();
+    ctx.arc(cx, cy, s*0.22, 0, Math.PI*2);
+    ctx.fillStyle = cssv('--white');
+    ctx.fill();
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = cssv('--bg-0');
+    ctx.stroke();
+    // label
+    ctx.fillStyle = cssv('--grey-hi');
+    ctx.font = `700 ${Math.max(9, s*0.22)}px 'IBM Plex Mono', ui-monospace, monospace`;
+    ctx.textAlign = 'left';
+    ctx.fillText(`#${sv.id} ${sv.grid_box||''}`, cx + s*0.4, cy - s*0.25);
+  });
+
+  // drone marker (triangle), hollow+dashed if estimated position —
+  // suppressed entirely until the drone has actually reported a fix
+  if (state.drone.hasFix) {
+    const p = worldToScreen(state.drone.x, state.drone.y);
+    const cx = p.sx + s/2, cy = p.sy + s/2;
+    const rad = (state.drone.heading||0) * Math.PI/180;
+    const size = Math.max(9, s*0.32);
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(rad);
+    ctx.beginPath();
+    ctx.moveTo(0, -size);
+    ctx.lineTo(size*0.62, size*0.72);
+    ctx.lineTo(-size*0.62, size*0.72);
+    ctx.closePath();
+    if (state.drone.estimated){
+      ctx.setLineDash([3,3]);
+      ctx.strokeStyle = cssv('--grey-hi');
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = cssv('--white');
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function gridLabel(cx, cy){
+  // A1-style label: column letters, row numbers.
+  // cx/cy can go negative (drone drifts left/above the origin), so the
+  // column-letter math is done on the absolute value with a sign prefix —
+  // JS's % keeps the sign of the dividend, so feeding a negative n straight
+  // into "n % 26" used to produce out-of-range charCodes (garbled labels).
+  const neg = cx < 0;
+  let n = Math.abs(cx);
+  let col = '';
+  do{
+    col = String.fromCharCode(65 + (n % 26)) + col;
+    n = Math.floor(n/26) - 1;
+  } while(n >= 0);
+  return `${neg ? '-' : ''}${col}${cy}`;
+}
+
+function cssv(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/* ---------------- pan / zoom ---------------- */
+canvas.addEventListener('mousedown', e => {
+  state.view.dragging = true;
+  state.view.autoFit = false;
+  state.view.lastX = e.clientX;
+  state.view.lastY = e.clientY;
+});
+window.addEventListener('mouseup', () => state.view.dragging = false);
+window.addEventListener('mousemove', e => {
+  if (!state.view.dragging) return;
+  const dx = (e.clientX - state.view.lastX) * devicePixelRatio;
+  const dy = (e.clientY - state.view.lastY) * devicePixelRatio;
+  state.view.offsetX -= dx / state.view.scale;
+  state.view.offsetY -= dy / state.view.scale;
+  state.view.lastX = e.clientX;
+  state.view.lastY = e.clientY;
+  drawMap();
+});
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  state.view.autoFit = false;
+  const factor = e.deltaY < 0 ? 1.1 : 0.9;
+  state.view.scale = Math.max(6, Math.min(120, state.view.scale * factor));
+  drawMap();
+}, {passive:false});
+
+el('zoomIn').addEventListener('click', () => { state.view.autoFit=false; state.view.scale = Math.min(120, state.view.scale*1.2); drawMap(); });
+el('zoomOut').addEventListener('click', () => { state.view.autoFit=false; state.view.scale = Math.max(6, state.view.scale/1.2); drawMap(); });
+el('recenter').addEventListener('click', () => {
+  state.view.autoFit = true;
+  state.view.offsetX = state.drone.x;
+  state.view.offsetY = state.drone.y;
+  drawMap();
+});
+
+/* ---------------- redraw loop (for pulsing survivor markers) ---------------- */
+function tick(){ drawMap(); requestAnimationFrame(tick); }
+
+/* ---------------- bench-test simulator (no drone needed) ---------------- */
+function stopSim(){
+  if (state.simTimer){ clearInterval(state.simTimer); state.simTimer = null; }
+  state.sim = null;
+}
+el('simBtn').addEventListener('click', () => {
+  if (state.simTimer){ stopSim(); el('simBtn').textContent='Simulate'; setConnected(false); log('Simulation stopped.', true); return; }
+  if (state.ws) return; // defensive — button is disabled in this state, should be unreachable
+  el('simBtn').textContent = 'Stop Sim';
+  resetMission();
+  setConnected(true);
+  state.startTime = Date.now();
+  log('Running local simulation (no live drone link) — the drone "boots" with an unknown position and localizes itself as it flies, same as a real GPS-denied run.');
+  state.sim = { t:0, x:0, y:0, heading:0, seeded:new Set(), objId:0 };
+  state.simTimer = setInterval(() => {
+    const sim = state.sim;
+    sim.t += 1;
+    sim.heading = (sim.heading + 8) % 360;
+    sim.x += Math.cos(sim.heading*Math.PI/180) * 0.3;
+    sim.y += Math.sin(sim.heading*Math.PI/180) * 0.3;
+    const t = sim.t;
+    handleMessage({type:'telemetry', data:{x:sim.x, y:sim.y, heading_deg:sim.heading, estimated:(t%15<3), battery_pct: Math.max(20, 100 - t*0.3), rssi_pct: 70 + Math.round(Math.sin(t/5)*15)}});
+
+    // grow map around the path, occasionally cutting a door/window opening
+    const cx = Math.round(sim.x), cy = Math.round(sim.y);
+    const newCells = [];
+    for (let dx=-1; dx<=1; dx++) for (let dy=-1; dy<=1; dy++){
+      const key = (cx+dx)+','+(cy+dy);
+      if (!sim.seeded.has(key)){
+        sim.seeded.add(key);
+        const r = Math.random();
+        let kind = 'floor';
+        if (dx===0 && dy===0) kind = 'corridor';
+        else if (r < 0.10) kind = 'door';
+        else if (r < 0.16) kind = 'window';
+        else if (r < 0.30) kind = 'wall';
+        else if (r < 0.45) kind = 'room';
+        newCells.push({x:cx+dx, y:cy+dy, kind});
+      }
+    }
+    if (newCells.length) handleMessage({type:'map_update', data:{cell_size_m:1.0, cells:newCells}});
+
+    handleMessage({type:'mission_status', data:{phase:'SEARCHING', coverage_pct: Math.min(100, t*0.8), elapsed_s: t}});
+
+    if (t===8) handleMessage({type:'waypoint', data:{role:'entry', x:cx, y:cy, t}});
+    if (t===70) handleMessage({type:'waypoint', data:{role:'exit', x:cx, y:cy, t}});
+    if (t===20 || t===55){
+      handleMessage({type:'survivor', data:{id: t===20?1:2, grid_box: gridLabel(cx,cy), x:cx, y:cy, confidence:0.8+Math.random()*0.18, t}});
+    }
+    if (t % 12 === 0){
+      sim.objId += 1;
+      const kinds = ['obj_crate','obj_rubble','obj_barrel'];
+      handleMessage({type:'object', data:{id: sim.objId, kind: kinds[sim.objId % kinds.length], x: cx + (Math.random()-0.5), y: cy + (Math.random()-0.5), t}});
+    }
+  }, 400);
+});
+
+resizeCanvas();
+tick();
+updateSimLock();
+log('GCS interface ready. No blueprint or starting position is preloaded — the map builds up live from what the drone reports once connected. Enter the field Wi-Fi/ad-hoc WebSocket address and connect, or click Simulate to bench-test the display. Use New Mission to wipe the board between flights.');
+</script>
+</body>
+</html>
