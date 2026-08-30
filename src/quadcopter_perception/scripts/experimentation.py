@@ -6,7 +6,7 @@ from ultralytics import YOLO
 model = YOLO("yolov8n-seg.pt")
 
 def process_frame(frame):
-    results = model(frame, verbose=False)
+    results = model(frame, verbose=True)
 
     annotated_frame = results[0].plot()
 
@@ -29,7 +29,7 @@ if len(sys.argv) > 1:
     process_frame(frame)
     cv2.waitKey(0)
 else:
-    cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
+    cap = cv2.VideoCapture(2, cv2.CAP_V4L2)
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
