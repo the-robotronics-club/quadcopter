@@ -1,0 +1,123 @@
+2026-08-26 19:26:43 - root - INFO - Initializing LLM interface for model 'Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' at http://localhost:1234/v1
+2026-08-26 19:26:43 - root - INFO - World name: 1_world_genrator
+2026-08-26 19:26:43 - gazebo_world_generator.src.prompts.manager - INFO - PromptManager initialized with template_dir=/home/leofelix/ros2_ws/install/gazebo_world_generator/share/gazebo_world_generator/prompts, default_version=v1
+2026-08-26 19:26:43 - gazebo_world_generator.src.utils.circuit_breaker - INFO - Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' initialized: failure_threshold=5, timeout=60.0s
+2026-08-26 19:26:59 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 19:26:59 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-08-26 19:27:00 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/config.json "HTTP/1.1 200 OK"
+2026-08-26 19:27:01 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/config.json "HTTP/1.1 200 OK"
+2026-08-26 19:27:03 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 19:27:04 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-08-26 19:27:05 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-08-26 19:27:06 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-08-26 19:27:07 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-08-26 19:27:07 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/resolve/main/vocab.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 19:27:07 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/vocab.json "HTTP/1.1 200 OK"
+2026-08-26 19:27:08 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/vocab.json "HTTP/1.1 200 OK"
+2026-08-26 19:27:09 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/resolve/main/merges.txt "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 19:27:09 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/merges.txt "HTTP/1.1 200 OK"
+2026-08-26 19:27:09 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/merges.txt "HTTP/1.1 200 OK"
+2026-08-26 19:27:11 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/resolve/main/tokenizer.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 19:27:11 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/tokenizer.json "HTTP/1.1 200 OK"
+2026-08-26 19:27:11 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/tokenizer.json "HTTP/1.1 200 OK"
+2026-08-26 19:27:27 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/resolve/main/added_tokens.json "HTTP/1.1 404 Not Found"
+2026-08-26 19:27:27 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/resolve/main/special_tokens_map.json "HTTP/1.1 404 Not Found"
+2026-08-26 19:27:27 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/resolve/main/chat_template.jinja "HTTP/1.1 404 Not Found"
+2026-08-26 19:27:28 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8 "HTTP/1.1 200 OK"
+2026-08-26 19:27:28 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 19:27:28 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/config.json "HTTP/1.1 200 OK"
+2026-08-26 19:27:29 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-08-26 19:27:29 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/d9748a51ae66354c4dad665aab2c71f26cf2c8cd/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-08-26 19:27:29 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-08-26 19:27:29 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-08-26 19:27:30 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-VL-30B-A3B-Instruct-FP8 "HTTP/1.1 200 OK"
+2026-08-26 19:27:30 - root - INFO - Generating world from description: "A 40x40m outdoor disaster area with 15 scattered concrete blocks, 10 jersey barriers, 5 construction debris piles, and exactly 2 standing persons."
+2026-08-26 19:27:30 - gazebo_world_generator.src.llm.interface - INFO - Parsing room description with LLM...
+2026-08-26 19:27:30 - gazebo_world_generator.src.llm.interface - INFO - Found dimension hint (pattern1): {'room_name': 'Outdoor', 'room_type': 'outdoor', 'width': 40.0, 'length': 40.0}
+2026-08-26 19:27:30 - gazebo_world_generator.src.llm.interface - INFO - Found 1 explicit dimension specification(s) in description
+2026-08-26 19:27:30 - openai._base_client - INFO - Retrying request to /chat/completions in 0.452774 seconds
+2026-08-26 19:27:31 - openai._base_client - INFO - Retrying request to /chat/completions in 0.869584 seconds
+2026-08-26 19:27:32 - gazebo_world_generator.src.utils.circuit_breaker - WARNING - Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' failure: 1/5
+2026-08-26 19:27:32 - gazebo_world_generator.src.llm.interface - ERROR - LLM API error on attempt 1: Connection error.
+2026-08-26 19:27:32 - gazebo_world_generator.src.llm.interface - INFO - Retrying in 1.0 seconds...
+2026-08-26 19:27:33 - openai._base_client - INFO - Retrying request to /chat/completions in 0.476233 seconds
+2026-08-26 19:27:33 - openai._base_client - INFO - Retrying request to /chat/completions in 0.804525 seconds
+2026-08-26 19:27:34 - gazebo_world_generator.src.utils.circuit_breaker - WARNING - Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' failure: 2/5
+2026-08-26 19:27:34 - gazebo_world_generator.src.llm.interface - ERROR - LLM API error on attempt 2: Connection error.
+2026-08-26 19:27:34 - gazebo_world_generator.src.llm.interface - INFO - Retrying in 1.5 seconds...
+2026-08-26 19:27:36 - openai._base_client - INFO - Retrying request to /chat/completions in 0.405802 seconds
+2026-08-26 19:27:36 - openai._base_client - INFO - Retrying request to /chat/completions in 0.926010 seconds
+2026-08-26 19:27:37 - gazebo_world_generator.src.utils.circuit_breaker - WARNING - Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' failure: 3/5
+2026-08-26 19:27:37 - gazebo_world_generator.src.llm.interface - ERROR - LLM API error on attempt 3: Connection error.
+2026-08-26 19:27:37 - gazebo_world_generator.src.llm.interface - ERROR - LLM query failed after multiple retries.
+2026-08-26 19:27:37 - gazebo_world_generator.src.llm.interface - WARNING - LLM response was empty (attempt 1/3)
+2026-08-26 19:27:37 - openai._base_client - INFO - Retrying request to /chat/completions in 0.477468 seconds
+2026-08-26 19:27:37 - openai._base_client - INFO - Retrying request to /chat/completions in 0.849481 seconds
+2026-08-26 19:27:38 - gazebo_world_generator.src.utils.circuit_breaker - WARNING - Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' failure: 4/5
+2026-08-26 19:27:38 - gazebo_world_generator.src.llm.interface - ERROR - LLM API error on attempt 1: Connection error.
+2026-08-26 19:27:38 - gazebo_world_generator.src.llm.interface - INFO - Retrying in 1.0 seconds...
+2026-08-26 19:27:39 - openai._base_client - INFO - Retrying request to /chat/completions in 0.446134 seconds
+2026-08-26 19:27:40 - openai._base_client - INFO - Retrying request to /chat/completions in 0.874445 seconds
+2026-08-26 19:27:41 - gazebo_world_generator.src.utils.circuit_breaker - WARNING - Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' failure: 5/5
+2026-08-26 19:27:41 - gazebo_world_generator.src.utils.circuit_breaker - ERROR - Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' threshold exceeded, opening circuit
+2026-08-26 19:27:41 - gazebo_world_generator.src.utils.circuit_breaker - WARNING - Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' state changed: closed -> open
+2026-08-26 19:27:41 - gazebo_world_generator.src.llm.interface - ERROR - LLM API error on attempt 2: Connection error.
+2026-08-26 19:27:41 - gazebo_world_generator.src.llm.interface - INFO - Retrying in 1.5 seconds...
+2026-08-26 19:27:42 - gazebo_world_generator.src.llm.interface - ERROR - Circuit breaker is open: Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' is OPEN. Retry in 58.5s
+2026-08-26 19:27:42 - gazebo_world_generator.src.llm.interface - WARNING - LLM response was empty (attempt 2/3)
+2026-08-26 19:27:42 - gazebo_world_generator.src.llm.interface - ERROR - Circuit breaker is open: Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' is OPEN. Retry in 58.5s
+2026-08-26 19:27:42 - gazebo_world_generator.src.llm.interface - WARNING - LLM response was empty (attempt 3/3)
+2026-08-26 19:27:42 - gazebo_world_generator.src.llm.interface - WARNING - All retry attempts exhausted. Falling back to manual room creation.
+2026-08-26 19:27:42 - gazebo_world_generator.src.llm.interface - WARNING - Using fallback room generation due to LLM failure or invalid response.
+2026-08-26 19:27:42 - gazebo_world_generator.src.world.generator - INFO - Parsed 1 rooms from description.
+2026-08-26 19:27:42 - gazebo_world_generator.src.world.generator - INFO - Creating room structure and layout...
+2026-08-26 19:27:42 - gazebo_world_generator.src.world.generator - INFO - Positioning rooms: 1 main rooms and 0 corridors
+2026-08-26 19:27:42 - gazebo_world_generator.src.world.generator - INFO - Placing rooms using connection-aware positioning...
+2026-08-26 19:27:42 - gazebo_world_generator.src.world.generator - INFO - 📋 Analyzing 1 rooms for corridor-based connections...
+2026-08-26 19:27:42 - gazebo_world_generator.src.world.generator - INFO - 🚪 Found 0 corridors to create
+2026-08-26 19:27:42 - gazebo_world_generator.src.world.generator - INFO - 🎯 Starting room: 'fallback_room' at origin with connections: {}
+2026-08-26 19:27:42 - gazebo_world_generator.src.world.generator - INFO - Populating rooms with objects...
+2026-08-26 19:27:42 - gazebo_world_generator.src.placement.engine - INFO - Placing 1 objects in 'fallback_room' (office).
+2026-08-26 19:27:42 - gazebo_world_generator.src.placement.engine - INFO - 🔍 Resolving 1 model types early...
+2026-08-26 19:27:42 - gazebo_world_generator.src.llm.interface - ERROR - Circuit breaker is open: Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' is OPEN. Retry in 58.5s
+2026-08-26 19:27:42 - gazebo_world_generator.src.models.resolver - INFO - No suitable local model found for 'desk'. Searching online...
+2026-08-26 19:27:42 - gazebo_world_generator.src.llm.interface - ERROR - Circuit breaker is open: Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' is OPEN. Retry in 58.4s
+2026-08-26 19:27:42 - gazebo_world_generator.src.models.online_database - INFO - Executing online searches in parallel...
+2026-08-26 19:27:48 - gazebo_world_generator.src.models.online_database - INFO - Top models after prioritization: ['Desk (OpenRobotics)', 'NurseTable (OpenRobotics)', 'NurseDesk (OpenRobotics)', 'Office Desk (OpenRobotics)', 'CHILDRENS_ROOM_NEO (GoogleResearch)']
+2026-08-26 19:27:48 - gazebo_world_generator.src.llm.interface - ERROR - Circuit breaker is open: Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' is OPEN. Retry in 52.8s
+2026-08-26 19:27:48 - gazebo_world_generator.src.llm.interface - ERROR - Circuit breaker is open: Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' is OPEN. Retry in 52.8s
+2026-08-26 19:27:48 - gazebo_world_generator.src.models.resolver - INFO - LLM validation concluded that no online models were suitable.
+2026-08-26 19:27:48 - gazebo_world_generator.src.models.resolver - WARNING - LLM-guided searches failed. Falling back to keyword-based local search.
+2026-08-26 19:27:48 - gazebo_world_generator.src.models.resolver - INFO - 🔧 Using fallback model for 'desk': model://cafe_table
+2026-08-26 19:27:48 - gazebo_world_generator.src.models.resolver - INFO - 🔧 Using hardcoded fallback: model://cafe_table
+2026-08-26 19:27:48 - gazebo_world_generator.src.utils.file_utils - WARNING - Could not find a valid model directory for 'cafe_table'
+2026-08-26 19:27:48 - gazebo_world_generator.src.utils.file_utils - WARNING - Could not find a valid model directory for 'cafe_table'
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - ✅ Model resolution complete - all dimensions known
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - Analyzing object relationships for 1 objects...
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.semantic_grouping - INFO - Requesting semantic grouping analysis for 1 object types...
+2026-08-26 19:27:48 - gazebo_world_generator.src.llm.interface - ERROR - Circuit breaker is open: Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' is OPEN. Retry in 52.7s
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.semantic_grouping - WARNING - LLM did not return valid JSON for semantic grouping. Response: 
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - Requesting LLM to place 1 objects in 'fallback_room'...
+2026-08-26 19:27:48 - gazebo_world_generator.src.llm.interface - ERROR - Circuit breaker is open: Circuit breaker 'llm_Qwen/Qwen3-VL-30B-A3B-Instruct-FP8' is OPEN. Retry in 52.6s
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - ✅ LLM placement successful
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - ERROR - LLM response could not be parsed into JSON. Response length: 0
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - WARNING - ⚠️ LLM generation failed. Using intelligent fallback placement.
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - Generated a fallback rule-based plan for 1 objects.
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - Validating placement of 1 objects (optimized workflow)...
+2026-08-26 19:27:48 - gazebo_world_generator.src.utils.file_utils - WARNING - Could not find a valid model directory for 'cafe_table'
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - 📊 Optimizing repetitive object layouts...
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - 📍 Pre-collision wall snapping...
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - 🔄 Collision resolution...
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO -   ✓ Collision detection converged after 1 iteration(s)
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - 🔗 Minimal semantic adjustments...
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO -   ℹ️ No semantic groups available - applying basic desk-chair pairing...
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - 🚪 Ensuring doorway clearance...
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - 🪑 Enforcing desk/table-chair relationships...
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - ✓ Final collision verification...
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO -   ✓ Final verification passed - no overlaps detected
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - ✅ Validation complete: 1 objects positioned
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - Resolving models and creating 1 objects...
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO -   ✅ Placed desk_0 at (x=0.00, y=0.00, z=0.00)
+2026-08-26 19:27:48 - gazebo_world_generator.src.placement.engine - INFO - 🏁 Spatial Placement Complete: 1 models created from plan.
+2026-08-26 19:27:48 - gazebo_world_generator.src.world.generator - INFO - Generating walls and doorways...
+2026-08-26 19:27:48 - gazebo_world_generator.src.world.generator - INFO - World file generated at: 1_world_genrator.sdf
