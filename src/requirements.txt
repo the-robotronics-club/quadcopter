@@ -1,0 +1,11 @@
+# GCS app (native desktop UI)
+PySide6>=6.5        # must be the full PySide6 package, not PySide6-Essentials —
+                     # QtWebSockets (used by gcs/bridge_client.py) ships in the
+                     # add-ons, and is missing from the essentials-only install.
+
+# Mock bridge for bench-testing without hardware (test_bridge_server.py)
+websockets>=12.0
+
+# Real PX4 bridge (px4_bridge.py) — translates live MAVLink telemetry
+# into the JSON/WebSocket contract the GCS expects.
+pymavlink>=2.4.40
