@@ -1,0 +1,50 @@
+<!--
+  CAMERA SENSOR SNIPPET -- for the Navigation team
+  ==================================================
+  THIS FILE IS THE SINGLE SOURCE OF TRUTH for the camera sensor parameters
+  (topic name, FOV, resolution, clip range, update rate). The exact same
+  <sensor> block also appears inside worlds/detection_test_camera_rig.sdf
+  (SDF has no cross-file include mechanism for partial snippets, only
+  whole models -- so it's duplicated by necessity, not oversight).
+
+  IF YOU CHANGE ANYTHING IN THIS FILE, MAKE THE IDENTICAL CHANGE IN
+  worlds/detection_test_camera_rig.sdf'S <sensor> BLOCK, OR THE TEST RIG
+  WILL SILENTLY STOP MATCHING WHAT THE REAL DRONE WILL EVENTUALLY USE.
+
+  Paste this <sensor> block inside the main body <link> of the real drone
+  model's SDF, once it exists. Do not create a separate model for it --
+  it should be a sensor on the drone's own body link, so it moves with
+  the drone automatically.
+
+  This is the ONLY thing Navigation needs to add for survivor detection to
+  work. Nothing else about the drone model needs to change, and nothing on
+  the perception/detection side needs to change either -- see
+  INTEGRATION_CONTRACT.md in this same folder for the full interface
+  agreement.
+
+  Placement suggestion: mount at the front of the drone body, angled per
+  whatever the mission decides (downward-facing for ground-plane mapping,
+  forward-facing for FPV-style search -- see geotag.py's CAMERA_MODE note
+  from the detection module for why this choice matters for accuracy).
+-->
+<sensor name="survivor_detection_camera" type="camera">
+  <!-- Do not rename this topic without updating detection_bringup.launch.py
+       to match -- "cam" is the agreed interface name (see
+       INTEGRATION_CONTRACT.md). -->
+  <topic>cam</topic>
+  <camera>
+    <horizontal_fov>1.25</horizontal_fov>
+    <image>
+      <width>640</width>
+      <height>480</height>
+      <format>R8G8B8</format>
+    </image>
+    <clip>
+      <near>0.05</near>
+      <far>50</far>
+    </clip>
+  </camera>
+  <always_on>true</always_on>
+  <update_rate>30</update_rate>
+  <visualize>true</visualize>
+</sensor>
