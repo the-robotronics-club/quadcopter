@@ -1,40 +1,76 @@
-<!--
-  CAMERA SENSOR SNIPPET -- for the Navigation team
-  ==================================================
-  Paste this <sensor> block inside the main body <link> of the real drone
-  model's SDF, once it exists. Do not create a separate model for it --
-  it should be a sensor on the drone's own body link, so it moves with
-  the drone automatically.
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <model name="detection_test_camera_rig">
+    <!--
+      Minimal standalone camera rig for testing the survivor-detection
+      pipeline against real Gazebo-rendered imagery, WITHOUT depending on
+      PX4 SITL or a real drone model (neither exists yet). This is a
+      placeholder: once Navigation's drone model is ready, replace this
+      rig with a camera sensor attached to the real drone model instead --
+      the bridge/topic setup below carries over unchanged either way.
 
-  This is the ONLY thing Navigation needs to add for survivor detection to
-  work. Nothing else about the drone model needs to change, and nothing on
-  the perception/detection side needs to change either -- see
-  INTEGRATION_CONTRACT.md in this same folder for the full interface
-  agreement.
+      Movable by hand for testing via:
+        gz service -s /world/<world_name>/set_pose --reqtype gz.msgs.Pose \
+          --reptype gz.msgs.Boolean --timeout 1000 \
+          --req 'name: "detection_test_camera_rig", position: {x: 2, y: 2, z: 1.5}'
+    -->
+    <static>false</static>
+    <link name="body">
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz>
+          <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+        </inertia>
+      </inertial>
 
-  Placement suggestion: mount at the front of the drone body, angled per
-  whatever the mission decides (downward-facing for ground-plane mapping,
-  forward-facing for FPV-style search -- see geotag.py's CAMERA_MODE note
-  from the detection module for why this choice matters for accuracy).
--->
-<sensor name="survivor_detection_camera" type="camera">
-  <!-- Do not rename this topic without updating detection_bringup.launch.py
-       to match -- "cam" is the agreed interface name (see
-       INTEGRATION_CONTRACT.md). -->
-  <topic>cam</topic>
-  <camera>
-    <horizontal_fov>1.25</horizontal_fov>
-    <image>
-      <width>640</width>
-      <height>480</height>
-      <format>R8G8B8</format>
-    </image>
-    <clip>
-      <near>0.05</near>
-      <far>50</far>
-    </clip>
-  </camera>
-  <always_on>true</always_on>
-  <update_rate>30</update_rate>
-  <visualize>true</visualize>
-</sensor>
+      <visual name="body_visual">
+        <geometry>
+          <box><size>0.2 0.2 0.1</size></box>
+        </geometry>
+        <material>
+          <ambient>0.2 0.2 0.2 1</ambient>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+        </material>
+      </visual>
+
+      <collision name="body_collision">
+        <geometry>
+          <box><size>0.2 0.2 0.1</size></box>
+        </geometry>
+      </collision>
+
+      <sensor name="camera" type="camera">
+        <!-- WARNING: this sensor block is DUPLICATED from
+             camera_sensor_snippet.sdf, which is the single source of
+             truth (SDF has no cross-file include for partial snippets).
+             If you change parameters here, change them there too, or
+             this test rig will stop accurately representing what the
+             real drone's camera will eventually use.
+
+             Uses the SAME topic name ("cam") that the real drone's camera
+             sensor will use once it exists (see camera_sensor_snippet.sdf
+             and INTEGRATION_CONTRACT.md). This means swapping this test
+             rig out for the real drone later requires ZERO changes to the
+             bridge, launch file, or detection node -- just delete this
+             rig from the world and spawn the real drone instead. -->
+        <topic>cam</topic>
+        <camera>
+          <horizontal_fov>1.25</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>50</far>
+          </clip>
+        </camera>
+        <always_on>true</always_on>
+        <update_rate>30</update_rate>
+        <visualize>true</visualize>
+      </sensor>
+    </link>
+  </model>
+</sdf>

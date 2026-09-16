@@ -14,6 +14,13 @@ The exact sensor definition to paste into the drone's SDF is in
 `camera_sensor_snippet.sdf` in this same folder. Don't rename the topic
 without updating `detection_bringup.launch.py` to match.
 
+**Note on duplication**: the same `<sensor>` block also appears inside
+`worlds/detection_test_camera_rig.sdf` (the placeholder test rig). SDF has
+no mechanism to include a partial snippet across files (only whole
+models), so this is duplicated by necessity. `camera_sensor_snippet.sdf`
+is the source of truth -- if sensor parameters change, both files need
+updating together.
+
 Mounting orientation (downward vs. forward-facing) is Navigation's call,
 but flag the choice to the perception side once decided -- it affects
 `geotag.py`'s accuracy assumptions (see that module's docstring).

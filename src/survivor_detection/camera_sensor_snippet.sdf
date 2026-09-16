@@ -1,6 +1,16 @@
 <!--
   CAMERA SENSOR SNIPPET -- for the Navigation team
   ==================================================
+  THIS FILE IS THE SINGLE SOURCE OF TRUTH for the camera sensor parameters
+  (topic name, FOV, resolution, clip range, update rate). The exact same
+  <sensor> block also appears inside worlds/detection_test_camera_rig.sdf
+  (SDF has no cross-file include mechanism for partial snippets, only
+  whole models -- so it's duplicated by necessity, not oversight).
+
+  IF YOU CHANGE ANYTHING IN THIS FILE, MAKE THE IDENTICAL CHANGE IN
+  worlds/detection_test_camera_rig.sdf'S <sensor> BLOCK, OR THE TEST RIG
+  WILL SILENTLY STOP MATCHING WHAT THE REAL DRONE WILL EVENTUALLY USE.
+
   Paste this <sensor> block inside the main body <link> of the real drone
   model's SDF, once it exists. Do not create a separate model for it --
   it should be a sensor on the drone's own body link, so it moves with
